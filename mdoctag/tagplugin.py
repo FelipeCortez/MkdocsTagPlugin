@@ -1,8 +1,11 @@
-from mkdocs.plugins import BasePlugin
 from mkdocs.config.config_options import Type
+from mkdocs.structure.files import File
+from mkdocs.plugins import BasePlugin
 import os
 import json
+import pathlib
 import urllib.parse
+
 
 def _extract_meta(meta_data, data_name):
     if data_name in meta_data:
@@ -49,6 +52,16 @@ class TagPlugin(BasePlugin):
         ('tagpage_dir', Type(str, default='tags')),
         ('data_filename', Type(str, default='tags.json'))
     )
+
+    def on_files(self, files, config):
+        files.append(File(
+            path="tags.md",
+            src_dir=str(pathlib.Path(__file__).parent.absolute()),
+            dest_dir=config["site_dir"],
+            use_directory_urls=True
+            ))
+
+        return files
 
     def on_page_markdown(self, markdown, **kwargs):
         config = kwargs.get('config')
