@@ -4,6 +4,8 @@
 
 <script>
  function filterByPred(tags, pred) {
+   if (pred.trim() == "") { return true; }
+
    pred = pred.replace(/!/, " ! ");
    let tokens = pred.split(" ");
    tokens = tokens
@@ -30,11 +32,10 @@
  }
 
  function renderDocList(docs, query) {
-   let filteredDocs = docs.filter(doc => query.trim() == "" || filterByPred(doc.tags, query));
+   let filteredDocs = docs.filter(doc => filterByPred(doc.tags, query) || filterByPred([doc.title.toLowerCase()], query));
 
    let allTags = {};
    filteredDocs.forEach(doc => doc.tags.forEach(tag => allTags.hasOwnProperty(tag) ? allTags[tag] += 1 : allTags[tag] = 1));
-   console.log(allTags);
 
    for (let [tag, qty] of Object.entries(allTags).sort((a, b) => b[1] - a[1])) {
      let tagLi = document.createElement("li");
@@ -54,7 +55,6 @@
        docTags.append(tagEl);
      }
 
-     console.log(doc);
      docLi.innerHTML = `<a href="${doc.url}">${doc.title}</a>`;
      docLi.append(docTags);
      document.querySelector("#matching-docs").append(docLi);
